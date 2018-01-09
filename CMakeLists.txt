@@ -60,6 +60,11 @@ if(RDK_SWIG_STATIC AND RDK_BUILD_SWIG_WRAPPERS)
 endif()
 
 
+# Includes Catch in the project:
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/External)
+
+include(ParseAndAddCatchTests)
+
 if(RDK_PGSQL_STATIC AND RDK_BUILD_PGSQL)
   if(NOT RDK_INSTALL_STATIC_LIBS)
     message("Enabling RDK_INSTALL_STATIC_LIBS because RDK_PGSQL_STATIC is set.")
