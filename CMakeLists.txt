@@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.1)
 
 project (RDKit)
 
+#-------
+# Config variables:
+set(RDKit_Year "2018")
+set(RDKit_Month "03")
+set(RDKit_Revision "1.dev1")
+set(RDKit_ABI "1")
+
+set(RDKit_CodeDir "${CMAKE_CURRENT_SOURCE_DIR}/Code")
+set(RDKit_ExternalDir "${CMAKE_CURRENT_SOURCE_DIR}/External")
+
+#include catch
+add_subdirectory(${RDKit_ExternalDir}/catch)
+
 IF(NOT CMAKE_BUILD_TYPE)
   SET(CMAKE_BUILD_TYPE Release CACHE STRING
       "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
@@ -14,6 +27,7 @@ set(CMAKE_MODULE_PATH
     ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/Code/cmake/Modules/")
 
 add_library(rdkit_base INTERFACE)
+add_dependencies(rdkit_base catch)
 
 option(RDK_BUILD_SWIG_WRAPPERS "build the SWIG wrappers" OFF )
 option(RDK_BUILD_PYTHON_WRAPPERS "build the standard python wrappers" ON )
@@ -41,6 +55,7 @@ option(RDK_OPTIMIZE_NATIVE "Use native features while compiling." ON)
 option(RDK_USE_STRICT_ROTOR_DEFINITION "Use the most strict rotatable bond definition" ON)
 option(RDK_BUILD_DESCRIPTORS3D "Build the 3D descriptors calculators, requires Eigen3 to be installed" ON)
 option(RDK_BUILD_FREESASA_SUPPORT "build the rdkit freesasa wrapper" OFF )
+
 if(NOT MSVC)
   if(RDK_OPTIMIZE_NATIVE)
       set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mpopcnt")
@@ -59,16 +74,7 @@ if(RDK_SWIG_STATIC AND RDK_BUILD_SWIG_WRAPPERS)
   endif(NOT RDK_INSTALL_STATIC_LIBS)
 endif()
 
-
-# Includes Catch in the project:
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/External)
-set (CATCH_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/External/Catch2")
-set (CATCH_INCLUDE_PATH "${CATCH_MODULE_PATH}/single_include")
-include_directories(${CATCH_INCLUDE_PATH})
-#include custom cmake function
-include ( "${CATCH_MODULE_PATH}/contrib/ParseAndAddCatchTests.cmake")
-
-
+include_directories(${CATCH_INCLUDE_DIR} ${COMMON_INCLUDES})
 
 if(RDK_PGSQL_STATIC AND RDK_BUILD_PGSQL)
   if(NOT RDK_INSTALL_STATIC_LIBS)
@@ -87,15 +93,6 @@ set(RDK_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/lib")
 # Also place the python extension where the source tree would expect them
 set(RDK_PYTHON_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/rdkit")
 
-#-------
-# Config variables:
-set(RDKit_Year "2018")
-set(RDKit_Month "03")
-set(RDKit_Revision "1.dev1")
-set(RDKit_ABI "1")
-
-set(RDKit_CodeDir "${CMAKE_CURRENT_SOURCE_DIR}/Code")
-set(RDKit_ExternalDir "${CMAKE_CURRENT_SOURCE_DIR}/External")
 
 if(RDK_INSTALL_INTREE)
   set(RDKit_BinDir "${CMAKE_SOURCE_DIR}/bin")
